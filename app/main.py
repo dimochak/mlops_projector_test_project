@@ -96,19 +96,20 @@ def init_training():
 
 
 @app.get("/")
-async def root():
+def root():
     return {'If you see this message, it means that application has been deployed properly. '
             'Navigate to {app-name}/docs to play around with available methods'}
 
 
 @app.post('/predict', response_model=ModelResponse)
-async def predict(request: UserRequest):
+def predict(request: UserRequest):
     path_to_pipeline = os.path.join(os.getcwd(), "results", "pipeline.joblib")
     if not os.path.exists(path_to_pipeline):
         init_training()
     pipeline = joblib.load(path_to_pipeline)
     print(request.text)
     user_score = pipeline.predict([request.text])
+    print(f'Score: {user_score}')
     return ModelResponse(text=request.text, score=user_score)
 
 
