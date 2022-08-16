@@ -4,7 +4,6 @@ import joblib
 import pandas as pd
 import re
 import nltk
-import time
 
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -14,16 +13,13 @@ from sklearn.metrics import mean_squared_error as mse
 from tqdm import tqdm
 
 from fastapi import FastAPI
-from pydantic import BaseModel, constr, conlist
-from typing import List
-
+from pydantic import BaseModel, constr
 
 nltk.download('stopwords')
 nltk.download('punkt')
 app = FastAPI()
 
 
-# In[]
 def preprocess(data, path_to_results, type='train'):
     excerpt_processed = []
     for e in tqdm(data['excerpt']):
@@ -50,7 +46,6 @@ def preprocess(data, path_to_results, type='train'):
     return excerpt_processed
 
 
-# In[]
 class UserRequest(BaseModel):
     text: constr(min_length=1)
 
@@ -59,7 +54,7 @@ class ModelResponse(BaseModel):
     text: str
     score: float
 
-# In[]
+
 def training(model, X, y, path_to_results):
     pipeline = make_pipeline(
         TfidfVectorizer(binary=True, ngram_range=(1, 1)),
@@ -76,7 +71,6 @@ def training(model, X, y, path_to_results):
         f.writelines(f'RMSE (train error): {mse(y, y_pred, squared=False)}')
 
 
-# In[]
 def init_training():
     cur_dir = os.getcwd()
     train_df = pd.read_csv(os.path.join(cur_dir, "data", "train.csv"))
@@ -103,8 +97,9 @@ def init_training():
 
 @app.get("/")
 async def root():
-    return {'If you see this message, it means that application has been deployed properly. Navigate to {app-name}/docs '
-            'to play around with available methods'}
+    return {'If you see this message, it means that application has been deployed properly. '
+            'Navigate to {app-name}/docs to play around with available methods'}
+
 
 @app.post('/predict', response_model=ModelResponse)
 async def predict(request: UserRequest):
@@ -115,3 +110,7 @@ async def predict(request: UserRequest):
     print(request.text)
     user_score = pipeline.predict([request.text])
     return ModelResponse(text=request.text, score=user_score)
+
+
+# if __name__ == "__main__":
+#     predict(UserRequest(text="This is a complicated text to rate"))
