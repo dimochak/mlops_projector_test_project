@@ -22,7 +22,7 @@ Note: If you clear up the _results_ folder, it might take some time to preproces
 1. Clone the project from this repository.
 2. Comment out last line in Dockerfile.
 2. Login to Heroku CLI.
-3. Run the following command: _docker tag myimage registry.heroku.com/mlops-project-test-project_
+3. Run the following command: _docker build -t registry.heroku.com/mlops-projector-test-project/web ._
 4. Run the following command: _docker push registry.heroku.com/mlops-project-test-project_
 5. Run the following command: _heroku container:release --app mlops-projector-test-project web_
 6. Run the following command: _heroku open --app mlops-projector-test-project_
