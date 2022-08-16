@@ -1,0 +1,2 @@
+web: bundle exec thin start -p $PORT
+web: uvicorn main:app --host 0.0.0.0
